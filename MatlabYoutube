@@ -1,0 +1,7 @@
+AX = actxcontrol('Shell.Explorer.2')
+    move(AX, [0 0 1281 961])
+    set(gcf, 'Position', [0 0 1281 961])
+    set(0, 'CurrentFigure', gcf)
+    Navigate(AX, 'http://youtu.be/Odx7BtqFpUU') %change this URl to play whatever Youtube video you want
+    pause(9) %allows you to control subject's exposure time to the video clip
+    release(AX);
