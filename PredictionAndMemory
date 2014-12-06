@@ -1,0 +1,228 @@
+function[h] = PSYC359()
+%practice trial stuff
+    B = NaN;
+    while isnan(B)
+        [ImageY, mapY] = imread('Xclusion.png');
+        Figure1 = image(ImageY); imgflag = 1; axis off;
+        set(gcf,'Position',[0 0 1281 961]); set(gcf, 'doublebuffer', 'on');
+        drawnow update; set(0,'currentfigure',1);
+        B = waitforbuttonpress();
+    end
+Practice;
+%Storage Variables:
+PredictScreen = 'PredictScreen.png';
+MemoryScreen = 'MemoryScreen.png';
+RTLogMemory = [];
+RTLogPrediction = [];
+AccuracyLogMemory = []; %use with Numbers in clip matrices to get accuracies
+AccuracyLogPrediction = [];
+ConditionForPredictionLog = [];
+ConditionForMemoryLog = [];
+%Video URLs go here IN ORDER OF PLAY!:
+videos = {'http://youtu.be/Odx7BtqFpUU','http://youtu.be/0RQvBht7X-Y','http://youtu.be/5qGvwTpo2co','http://youtu.be/Ju4dVoVuXBw','http://youtu.be/Cz3FdcnrBK8','http://youtu.be/GTgf6jX6Vik',...
+    'http://youtu.be/0PDKnT3LTbE','http://youtu.be/BY6bnFqsimw','http://youtu.be/T__yzLVoxM0','http://youtu.be/8HtnHFBbB74','http://youtu.be/DlZG-GrLZdg','http://youtu.be/_liqRI3neHU','http://youtu.be/1MTKCU627O8','http://youtu.be/T4d88NhlzDg','http://youtu.be/vi7bcKS2xIQ','http://youtu.be/32SxR2LMogE',...
+    'http://youtu.be/mfvRkZUNSDk','http://youtu.be/xf0ub2Dv71o','http://youtu.be/0LVCCUEm10k','http://youtu.be/-thOr6eRVX0','http://youtu.be/3f12Qil9JYs','http://youtu.be/r626jZcCc3c','http://youtu.be/oAo5CnkSYRY','http://youtu.be/JtNLX7W-bQ0','http://youtu.be/d4-7mWfM0d0','http://youtu.be/WCKwc3IJ6mw','http://youtu.be/LMEmdfDkNVc','http://youtu.be/g2R9q5IyzbI',...
+    'http://youtu.be/AYti201xeA0','http://youtu.be/lKVbxJb5y4Y','http://youtu.be/kwwv0bo_hSk','http://youtu.be/LAvMnG2-7ig'};
+%%%%%%%%%%%%%%%%
+%read all object images in here:
+Object1 = 'S1T2.png';
+Object2 = 'S2F3.png';
+Object3 = 'S3F2.png';
+Object4 = 'S4F1.png';
+Object5 = 'S5T2.png';
+Object6 = 'S6T3.png';
+Object7 = 'S7T2.png';
+Object8 = 'S8T1.png';
+Object9 = 'S9T2.png';
+Object10 = 'S10F3.png';
+Object11 = 'S11T2.png';
+Object12 = 'S12T1.png';
+Object13 = 'S13T2.png';
+Object14 = 'S14F1.png';
+Object15 = 'S15T3.png';
+Object16 = 'S16F2.png';
+Object17 = 'S17F3.png';
+Object18 = 'S18T3.png';
+Object19 = 'S19F1.png';
+Object20 = 'S20F2.png';
+Object21 = 'S21T1.png';
+Object22 = 'S22F3.png';
+Object23 = 'S23F1.png';
+Object24 = 'S24F3.png';
+Object25 = 'S25F3.png';
+Object26 = 'S26F2.png';
+Object27 = 'S27F3.png';
+Object28 = 'S28T2.png';
+Object29 = 'S29F1.png';
+Object30 = 'S30F1.png';
+Object31 = 'S31T1.png';
+Object32 = 'S32T2.png';
+%read all screenshots in here:
+Shot1 = 'scene1true.png';
+Shot2 = 'scene2true.png';
+Shot3 = 'scene3false.png';
+Shot4 = 'scene4false.png';
+Shot5 = 'scene5true.png';
+Shot6 = 'scene6true.png';
+Shot7 = 'scene7false.png';
+Shot8 = 'scene8false.png';
+Shot9 = 'scene9true.png';
+Shot10 = 'scene10true.png';	
+Shot11 = 'scene11false.png';	
+Shot12 = 'scene12false.png';	
+Shot13 = 'scene13true.png';	
+Shot14 = 'scene14true.png';	
+Shot15 = 'scene15false.png';	
+Shot16 = 'scene16false.png';	
+Shot17 = 'scene17true.png';	
+Shot18 = 'scene18false.png';	
+Shot19 = 'scene19true.png';	
+Shot20 = 'scene20true.png';	
+Shot21 = 'scene21false.png';	
+Shot22 = 'scene22false.png';	
+Shot23 = 'scene23true.png';	
+Shot24 = 'scene24true.png';	
+Shot25 = 'scene25false.png';	
+Shot26 = 'scene26false.png';	
+Shot27 = 'scene27true.png';	
+Shot28 = 'scene28true.png';	
+Shot29 = 'scene29false.png';	
+Shot30 = 'scene30false.png';	
+Shot31 = 'scene31true.png';	
+Shot32 = 'scene32true.png';	
+
+%initialize accuracy trackers here:
+PredictionNumbersInClip = [1 2 5 6 9 10 13 14 17 18 19 20 23 24 27 28 31 32]; %Shot Numbers in PredictionScreenShots that are actually depicting the right activity.
+%initialize condition tracker here:
+ClipBoundOrNoMemory = [0,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,0,1,0,0,1,0,1,0,1,0,1,0];
+ClipBoundOrNoPrediction = [0, 1, 1, 0,  0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0,1, 0,0];
+TIMESHOW = [74 38 83 66 16 32 110 66 17 19 21 24 35 24 25 39 61 80 32 33 60 30 34 31 42 28 79 47 28 29 23 18];
+%%%%%%%%%%%%%%%%%
+%Start Main Experiment
+for PlayWhich = 1:32
+    %play the video:
+    AX = actxcontrol('Shell.Explorer.2');
+    move(AX, [0 0 1281 961])
+    set(gcf, 'Position', [0 0 1281 961])
+    set(0, 'CurrentFigure', gcf)
+    Navigate(AX,videos{PlayWhich})
+    TimerExample(TIMESHOW(PlayWhich))
+    release(AX);
+    %get their response to the video's memory question and record accuracy
+    [ImageM, mapM] = imread(eval('MemoryScreen'));
+    Figure1 = image(ImageM); imgflag = 1; axis off;
+    set(gcf,'Position',[0 0 1281 961]); set(gcf, 'doublebuffer', 'on');
+    drawnow update; set(0,'currentfigure',1);
+    TimerExample(4);
+    UserResponse = NaN;
+    while(isnan(UserResponse))
+        set(0,'currentfigure',1);
+        Object = strcat('Object', int2str(PlayWhich));
+        [Image1, map1] = imread(eval(eval('Object')));
+        Figure1 = image(Image1); imgflag = 1; axis off;
+        set(gcf,'Position',[0 0 1281 961]); set(gcf, 'doublebuffer', 'on');
+        drawnow update; set(0,'currentfigure',1); tic;
+        ResponseToTrialMemory = waitforbuttonpress();
+        ResponseToTrialMemory = get(gcf,'currentcharacter');
+        TrialRTMemory = toc;
+        RTLogMemory(1,end+1) = TrialRTMemory;
+        if TrialRTMemory < 4
+        StopTime = 4-TrialRTMemory;
+        pause(StopTime);
+        end
+        UserResponse = 1000;
+    end
+    Checker = eval(strcat('Object', int2str(PlayWhich)));
+    Checker = Checker(end-5);
+    if strcmp(Checker, 'T')
+        CorrectResponseMemory = 'y';
+    else
+        CorrectResponseMemory = 'n';
+    end
+    if strcmp(ResponseToTrialMemory,CorrectResponseMemory) == 1
+        MemoryTrialCorrect = 1;
+    else
+        MemoryTrialCorrect = 0;
+    end
+    AccuracyLogMemory(1,end+1) = MemoryTrialCorrect;
+    ConditionForMemoryLog(1,end+1) = ClipBoundOrNoMemory(PlayWhich);
+    %get their response to the video's prediction question and record
+    %accuracy
+    [ImageP, mapP] = imread(eval('PredictScreen'));
+    Figure1 = image(ImageP); imgflag = 1; axis off;
+    set(gcf,'Position',[0 0 1281 961]); set(gcf, 'doublebuffer', 'on');
+    drawnow update; set(0,'currentfigure',1);
+    TimerExample(6);
+    UserResponse = NaN;
+    while(isnan(UserResponse))
+        set(0,'currentfigure',1);
+        Shot = strcat('Shot', int2str(PlayWhich));
+        [Image2, map2] = imread(eval(eval('Shot')));
+        Figure1 = image(Image2); imgflag = 1; axis off;
+        set(gcf,'Position',[0 0 1281 961]); set(gcf, 'doublebuffer', 'on');
+        drawnow update; set(0,'currentfigure',1); tic;
+        ResponseToTrialPrediction = waitforbuttonpress();
+        ResponseToTrialPrediction = get(gcf,'currentcharacter');
+        TrialRTPrediction = toc;
+        RTLogPrediction(1,end+1) = TrialRTPrediction;
+        if TrialRTPrediction < 6
+        StopTime = 6-TrialRTMemory;
+        pause(StopTime);
+        end
+        UserResponse = 1000;
+    end
+    if ~isempty(intersect(PlayWhich,PredictionNumbersInClip))
+        CorrectResponsePrediction = 'y';
+    else
+        CorrectResponsePrediction = 'n';
+    end
+    if strcmp(ResponseToTrialPrediction,CorrectResponsePrediction) == 1
+        PredictionTrialCorrect = 1;
+    else
+        PredictionTrialCorrect = 0;
+    end
+    AccuracyLogPrediction(1,end+1) = PredictionTrialCorrect;
+    ConditionForPredictionLog(1,end+1) = ClipBoundOrNoPrediction(PlayWhich);
+end
+%%%%%%%%%%%%%
+%tell the participant that they are all done!:
+READ = imread('ExperimentEnd.jpg');
+image(READ); imgflag = 1; axis off; drawnow;
+set(gcf,'Position',[0 0 1281 961]);
+pause(12)
+%Write the results to excel
+%Now Log The Results (RT/Accuracy/TypeOfBound)
+LogLength = length(RTLogMemory);
+format bank
+DateTimeStamp = clock;
+AlreadyThereData = xlsread('Psyc359.xls');
+OneMoreThanLengthofData = size(AlreadyThereData,1) + 2; %it is +2 because of headers in your xls sheet.
+PreWrite1;
+xlswrite1('Psyc359.xls', DateTimeStamp, 1, strcat('A',int2str(OneMoreThanLengthofData)));
+for WriteTheseData = 1:LogLength
+    %%FIX THESE VARIABLES DOWN TO LINE 73!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    %%THEY ARE WRONG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    MemoryConditionToBeLogged = ConditionForMemoryLog(WriteTheseData);
+    MemoryRTToBeLogged = RTLogMemory(WriteTheseData);
+    MemoryAccuracyToBeLogged = AccuracyLogMemory(WriteTheseData);
+    PredictionConditionToBeLogged = ConditionForPredictionLog(WriteTheseData);
+    PredictionRTToBeLogged = RTLogPrediction(WriteTheseData);
+    PredictionAccuracyToBeLogged = AccuracyLogPrediction(WriteTheseData);       
+    try
+        RowToWriteTo = OneMoreThanLengthofData+WriteTheseData;
+        xlswrite1('Psyc359.xls', MemoryConditionToBeLogged, 1, strcat('G',int2str(RowToWriteTo)));
+        xlswrite1('Psyc359.xls', MemoryRTToBeLogged, 1, strcat('H',int2str(RowToWriteTo)));
+        xlswrite1('Psyc359.xls', MemoryAccuracyToBeLogged, 1, strcat('I',int2str(RowToWriteTo)));
+        xlswrite1('Psyc359.xls', PredictionConditionToBeLogged, 1, strcat('J',int2str(RowToWriteTo)));
+        xlswrite1('Psyc359.xls', PredictionRTToBeLogged, 1, strcat('K',int2str(RowToWriteTo)));
+        xlswrite1('Psyc359.xls', PredictionAccuracyToBeLogged, 1, strcat('L',int2str(RowToWriteTo)));
+    catch
+        display('Data write error.')
+    end
+    if WriteTheseData == LogLength/2
+        display('Logging 50% complete')
+    end
+end
+PostWrite1;
+display('Subject Complete!')
+end
